@@ -1,0 +1,23 @@
+name: Update Leaderboard
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Fetch API data
+        run: |
+          curl "https://api.roulobets.com/v1/external/affiliates?start_at=2025-11-19&end_at=2025-11-21&key=8y0afvsy0tjhr01ff7q5k1jadtc72sgx" > data.json
+
+      - name: Commit changes
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
+          git add data.json
+          git commit -m "update leaderboard" || exit 0
+          git push
