@@ -1,9 +1,9 @@
 async function load() {
   try {
-    const res = await fetch("data.json");
+    const res = await fetch("data.json", { cache: "no-store" });
     const data = await res.json();
 
-    const list = data.data || [];
+    const list = data.data || data || [];
 
     list.sort((a, b) => (b.wagered || 0) - (a.wagered || 0));
 
@@ -16,17 +16,20 @@ async function load() {
         i === 2 ? "🥉" : `#${i + 1}`;
 
       html += `
-        <div class="row">
+        <div style="display:flex;justify-content:space-between;padding:8px;border-bottom:1px solid #333;">
           <div>${medal} ${u.username || "Unknown"}</div>
           <div>$${Number(u.wagered || 0).toLocaleString()}</div>
         </div>
       `;
     });
 
-    document.getElementById("list").innerHTML = html;
+    document.getElementById("list").innerHTML = html || "No data found";
 
   } catch (e) {
-    document.getElementById("list").innerHTML =
-      "Error loading data";
+    console.log(e);
+    document.getElementById("list").innerHTML = "Error loading data";
   }
 }
+
+load();
+setInterval(load, 60000);
