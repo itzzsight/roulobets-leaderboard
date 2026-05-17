@@ -13,27 +13,32 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Fetch API data (robust)
+      - name: Debug - start
         run: |
-          echo "Fetching API..."
+          echo "STARTING WORKFLOW"
+          date
 
-          RESPONSE=$(curl -s -L \
-            "https://api.roulobets.com/v1/external/affiliates?start_at=2025-11-19&end_at=2025-11-21&key=8y0afvsy0tjhr01ff7q5k1jadtc72sgx" \
-            -H "Accept: application/json")
+      - name: Fetch API (DEBUG MODE)
+        run: |
+          echo "Calling API..."
 
-          echo "Raw response:"
-          echo "$RESPONSE"
+          curl -i -L \
+          "https://api.roulobets.com/v1/external/affiliates?start_at=2025-11-19&end_at=2025-11-21&key=8y0afvsy0tjhr01ff7q5k1jadtc72sgx" \
+          -H "Accept: application/json" \
+          -o data.json
 
-          echo "$RESPONSE" > data.json
+          echo "FILE SAVED:"
+          ls -lah
 
-      - name: Validate data
+          echo "DATA.JSON CONTENT:"
+          cat data.json
+
+      - name: Validate file
         run: |
           if [ ! -s data.json ]; then
-            echo "data.json is empty — stopping"
+            echo "❌ data.json is empty or missing"
             exit 1
           fi
-
-          cat data.json
 
       - name: Commit changes
         run: |
