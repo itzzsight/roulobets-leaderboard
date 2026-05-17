@@ -36,8 +36,10 @@
 <script>
 async function load() {
   try {
+    const today = new Date().toISOString().split("T")[0];
+
     const api =
-      "https://api.roulobets.com/v1/external/affiliates?start_at=2025-11-19&end_at=2025-11-21&key=8y0afvsy0tjhr01ff7q5k1jadtc72sgx";
+      `https://api.roulobets.com/v1/external/affiliates?start_at=${today}&end_at=${today}&key=8y0afvsy0tjhr01ff7q5k1jadtc72sgx`;
 
     const proxy = "https://api.allorigins.win/raw?url=";
 
@@ -46,17 +48,17 @@ async function load() {
 
     console.log("API RESPONSE:", data);
 
-    // ✅ AUTO DETECT DATA FORMAT (THIS FIXES YOUR ISSUE)
     let list = [];
 
-    if (Array.isArray(data)) {
-      list = data;
-    } else if (Array.isArray(data.data)) {
-      list = data.data;
-    } else if (Array.isArray(data.result)) {
-      list = data.result;
-    } else if (Array.isArray(data.leaderboard)) {
-      list = data.leaderboard;
+    if (Array.isArray(data)) list = data;
+    else if (Array.isArray(data.data)) list = data.data;
+    else if (Array.isArray(data.result)) list = data.result;
+    else if (Array.isArray(data.leaderboard)) list = data.leaderboard;
+
+    if (!list.length) {
+      document.getElementById("list").innerHTML =
+        "No leaderboard data for today yet.";
+      return;
     }
 
     list.sort((a, b) => (b.wagered || 0) - (a.wagered || 0));
@@ -77,13 +79,12 @@ async function load() {
       `;
     });
 
-    document.getElementById("list").innerHTML =
-      html || "No leaderboard data available";
+    document.getElementById("list").innerHTML = html;
 
   } catch (e) {
     console.log(e);
     document.getElementById("list").innerHTML =
-      "Error loading data (API failed)";
+      "Error loading data";
   }
 }
 
