@@ -1,12 +1,6 @@
-<script>
-const API_URL = "https://api.roulobets.com/v1/external/affiliates?start_at=2025-11-19&end_at=2025-11-21&key=8y0afvsy0tjhr01ff7q5k1jadtc72sgx";
-
-// Public CORS proxy (no backend needed)
-const PROXY = "https://api.allorigins.win/raw?url=";
-
 async function load() {
   try {
-    const res = await fetch(PROXY + encodeURIComponent(API_URL));
+    const res = await fetch("data.json");
     const data = await res.json();
 
     const list = data.data || [];
@@ -32,12 +26,7 @@ async function load() {
     document.getElementById("list").innerHTML = html;
 
   } catch (e) {
-    console.log(e);
     document.getElementById("list").innerHTML =
-      "⚠️ Error loading data (API or proxy blocked)";
+      "Error loading data";
   }
 }
-
-load();
-setInterval(load, 60000);
-</script>
