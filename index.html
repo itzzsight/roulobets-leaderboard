@@ -1,9 +1,10 @@
-<div id="list">Loading...</div>
-
-<script>
 async function load() {
   try {
-    const res = await fetch("data.json", { cache: "no-store" });
+    const api = "https://api.roulobets.com/v1/external/affiliates?start_at=2025-11-19&end_at=2025-11-21&key=8y0afvsy0tjhr01ff7q5k1jadtc72sgx";
+
+    const proxy = "https://api.allorigins.win/raw?url=";
+
+    const res = await fetch(proxy + encodeURIComponent(api));
     const data = await res.json();
 
     const list = data.data || data || [];
@@ -26,14 +27,14 @@ async function load() {
       `;
     });
 
-    document.getElementById("list").innerHTML = html || "No data found";
+    document.getElementById("list").innerHTML = html;
 
   } catch (e) {
     console.log(e);
-    document.getElementById("list").innerHTML = "Error loading data";
+    document.getElementById("list").innerHTML =
+      "Error loading data (API blocked)";
   }
 }
 
 load();
 setInterval(load, 60000);
-</script>
