@@ -13,38 +13,22 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Debug - start
+      - name: Fetch API data
         run: |
-          echo "STARTING WORKFLOW"
-          date
+          echo "Fetching..."
 
-      - name: Fetch API (DEBUG MODE)
-        run: |
-          echo "Calling API..."
-
-          curl -i -L \
+          curl -s -L \
           "https://api.roulobets.com/v1/external/affiliates?start_at=2025-11-19&end_at=2025-11-21&key=8y0afvsy0tjhr01ff7q5k1jadtc72sgx" \
           -H "Accept: application/json" \
           -o data.json
 
-          echo "FILE SAVED:"
-          ls -lah
-
-          echo "DATA.JSON CONTENT:"
+          echo "Saved file:"
           cat data.json
-
-      - name: Validate file
-        run: |
-          if [ ! -s data.json ]; then
-            echo "❌ data.json is empty or missing"
-            exit 1
-          fi
 
       - name: Commit changes
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "actions@github.com"
-
           git add data.json
           git commit -m "update leaderboard" || exit 0
           git push
