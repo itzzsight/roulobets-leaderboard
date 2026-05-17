@@ -1,40 +1,77 @@
-async function load() {
-  try {
-    const api = "https://api.roulobets.com/v1/external/affiliates?start_at=2025-11-19&end_at=2025-11-21&key=8y0afvsy0tjhr01ff7q5k1jadtc72sgx";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Leaderboard</title>
+  <style>
+    body {
+      background: #0f0f0f;
+      color: white;
+      font-family: Arial;
+      display: flex;
+      justify-content: center;
+      padding-top: 40px;
+    }
+    .box {
+      width: 400px;
+      background: #1a1a1a;
+      padding: 20px;
+      border-radius: 10px;
+    }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px;
+      border-bottom: 1px solid #333;
+    }
+  </style>
+</head>
 
-    const proxy = "https://api.allorigins.win/raw?url=";
+<body>
+  <div class="box">
+    <h2>🏆 Leaderboard</h2>
+    <div id="list">Loading...</div>
+  </div>
 
-    const res = await fetch(proxy + encodeURIComponent(api));
-    const data = await res.json();
+  <script>
+    async function load() {
+      try {
+        const api = "https://api.roulobets.com/v1/external/affiliates?start_at=2025-11-19&end_at=2025-11-21&key=8y0afvsy0tjhr01ff7q5k1jadtc72sgx";
+        const proxy = "https://api.allorigins.win/raw?url=";
 
-    const list = data.data || data || [];
+        const res = await fetch(proxy + encodeURIComponent(api));
+        const data = await res.json();
 
-    list.sort((a, b) => (b.wagered || 0) - (a.wagered || 0));
+        const list = data.data || [];
 
-    let html = "";
+        list.sort((a, b) => (b.wagered || 0) - (a.wagered || 0));
 
-    list.slice(0, 10).forEach((u, i) => {
-      const medal =
-        i === 0 ? "🥇" :
-        i === 1 ? "🥈" :
-        i === 2 ? "🥉" : `#${i + 1}`;
+        let html = "";
 
-      html += `
-        <div style="display:flex;justify-content:space-between;padding:8px;border-bottom:1px solid #333;">
-          <div>${medal} ${u.username || "Unknown"}</div>
-          <div>$${Number(u.wagered || 0).toLocaleString()}</div>
-        </div>
-      `;
-    });
+        list.slice(0, 10).forEach((u, i) => {
+          const medal =
+            i === 0 ? "🥇" :
+            i === 1 ? "🥈" :
+            i === 2 ? "🥉" : `#${i + 1}`;
 
-    document.getElementById("list").innerHTML = html;
+          html += `
+            <div class="row">
+              <div>${medal} ${u.username || "Unknown"}</div>
+              <div>$${Number(u.wagered || 0).toLocaleString()}</div>
+            </div>
+          `;
+        });
 
-  } catch (e) {
-    console.log(e);
-    document.getElementById("list").innerHTML =
-      "Error loading data (API blocked)";
-  }
-}
+        document.getElementById("list").innerHTML = html || "No data";
 
-load();
-setInterval(load, 60000);
+      } catch (e) {
+        console.log(e);
+        document.getElementById("list").innerHTML = "Error loading data";
+      }
+    }
+
+    load();
+    setInterval(load, 60000);
+  </script>
+</body>
+</html>
