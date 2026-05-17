@@ -33,45 +33,62 @@
     <div id="list">Loading...</div>
   </div>
 
-  <script>
-    async function load() {
-      try {
-        const api = "https://api.roulobets.com/v1/external/affiliates?start_at=2025-11-19&end_at=2025-11-21&key=8y0afvsy0tjhr01ff7q5k1jadtc72sgx";
-        const proxy = "https://api.allorigins.win/raw?url=";
+<script>
+async function load() {
+  try {
+    const api =
+      "https://api.roulobets.com/v1/external/affiliates?start_at=2025-11-19&end_at=2025-11-21&key=8y0afvsy0tjhr01ff7q5k1jadtc72sgx";
 
-        const res = await fetch(proxy + encodeURIComponent(api));
-        const data = await res.json();
+    const proxy = "https://api.allorigins.win/raw?url=";
 
-        const list = data.data || [];
+    const res = await fetch(proxy + encodeURIComponent(api));
+    const data = await res.json();
 
-        list.sort((a, b) => (b.wagered || 0) - (a.wagered || 0));
+    console.log("API RESPONSE:", data);
 
-        let html = "";
+    // ✅ AUTO DETECT DATA FORMAT (THIS FIXES YOUR ISSUE)
+    let list = [];
 
-        list.slice(0, 10).forEach((u, i) => {
-          const medal =
-            i === 0 ? "🥇" :
-            i === 1 ? "🥈" :
-            i === 2 ? "🥉" : `#${i + 1}`;
-
-          html += `
-            <div class="row">
-              <div>${medal} ${u.username || "Unknown"}</div>
-              <div>$${Number(u.wagered || 0).toLocaleString()}</div>
-            </div>
-          `;
-        });
-
-        document.getElementById("list").innerHTML = html || "No data";
-
-      } catch (e) {
-        console.log(e);
-        document.getElementById("list").innerHTML = "Error loading data";
-      }
+    if (Array.isArray(data)) {
+      list = data;
+    } else if (Array.isArray(data.data)) {
+      list = data.data;
+    } else if (Array.isArray(data.result)) {
+      list = data.result;
+    } else if (Array.isArray(data.leaderboard)) {
+      list = data.leaderboard;
     }
 
-    load();
-    setInterval(load, 60000);
-  </script>
+    list.sort((a, b) => (b.wagered || 0) - (a.wagered || 0));
+
+    let html = "";
+
+    list.slice(0, 10).forEach((u, i) => {
+      const medal =
+        i === 0 ? "🥇" :
+        i === 1 ? "🥈" :
+        i === 2 ? "🥉" : `#${i + 1}`;
+
+      html += `
+        <div class="row">
+          <div>${medal} ${u.username || "Unknown"}</div>
+          <div>$${Number(u.wagered || 0).toLocaleString()}</div>
+        </div>
+      `;
+    });
+
+    document.getElementById("list").innerHTML =
+      html || "No leaderboard data available";
+
+  } catch (e) {
+    console.log(e);
+    document.getElementById("list").innerHTML =
+      "Error loading data (API failed)";
+  }
+}
+
+load();
+setInterval(load, 60000);
+</script>
 </body>
 </html>
