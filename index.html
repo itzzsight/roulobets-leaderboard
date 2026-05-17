@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Leaderboard</title>
+  <style>
+    body {
+      background: #0f0f0f;
+      color: white;
+      font-family: Arial;
+      text-align: center;
+    }
+
+    .board {
+      max-width: 500px;
+      margin: auto;
+      margin-top: 50px;
+      background: #1a1a1a;
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px;
+      border-bottom: 1px solid #333;
+    }
+
+    .title {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="board">
+  <div class="title">🏆 Wager Leaderboard</div>
+  <div id="list">Loading...</div>
+</div>
+
+<script>
+const API_URL = "https://api.roulobets.com/v1/external/affiliates?start_at=2025-11-19&end_at=2025-11-21&key=8y0afvsy0tjhr01ff7q5k1jadtc72sgx";
+
+async function load() {
+  try {
+    const res = await fetch(API_URL);
+    const data = await res.json();
+
+    const list = data.data || [];
+
+    list.sort((a,b) => (b.wagered || 0) - (a.wagered || 0));
+
+    let html = "";
+
+    list.slice(0, 10).forEach((u, i) => {
+      html += `
+        <div class="row">
+          <div>#${i+1} ${u.username || "Unknown"}</div>
+          <div>$${Number(u.wagered || 0).toLocaleString()}</div>
+        </div>
+      `;
+    });
+
+    document.getElementById("list").innerHTML = html;
+
+  } catch (e) {
+    document.getElementById("list").innerHTML = "Error loading data";
+  }
+}
+
+load();
+setInterval(load, 60000); // refresh every 60 sec
+</script>
+
+</body>
+</html>
